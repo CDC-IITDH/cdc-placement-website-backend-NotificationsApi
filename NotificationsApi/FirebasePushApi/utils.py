@@ -13,6 +13,10 @@ import sys
 from firebase_admin import messaging
 from firebase_admin.messaging import Message, Notification
 from datetime import datetime
+import logging
+
+#inialise logger
+db_logger = logging.getLogger('db')
 
 
 def precheck(required_data=None):
@@ -43,7 +47,7 @@ def precheck(required_data=None):
             except:
                 # print what exception is
                 print(traceback.format_exc())
-              #  logger.warning("Pre check: " + str(sys.exc_info()))
+                db_logger.warning("Pre check: " + str(sys.exc_info()))
                 return Response({'action': "Pre check", 'message': "Something went wrong"},
                                 status=status.HTTP_400_BAD_REQUEST)
 
@@ -83,20 +87,23 @@ def isAuthorized(allowed_users=None):
 
             except PermissionError:
                 print(sys.exc_info())
+                db_logger.warning("Is Authorized? " + str(sys.exc_info()))
                 return Response({'action': "Is Authorized?", 'message': 'Access Denied'},
                                 status=status.HTTP_401_UNAUTHORIZED)
             except Http404:
                 print(sys.exc_info())
+                db_logger.warning("Is Authorized? " + str(sys.exc_info()))
                 return Response({'action': "Is Authorized?", 'message': "User Not Found. Contact CDC for more details"},
                                 status=status.HTTP_404_NOT_FOUND)
             except ValueError as e:
                 print(sys.exc_info())
+                db_logger.error("Problem with Google Oauth2.0 " + str(sys.exc_info()))
                 # logger.error("Problem with Google Oauth2.0 " + str(e))
                 return Response({'action': "Is Authorized?", 'message': 'Problem with Google Sign In'},
                                 status=status.HTTP_401_UNAUTHORIZED)
             except:
                 print(sys.exc_info())
-                # logger.warning("Is Authorized? " + str(sys.exc_info()))
+                db_logger.warning("Is Authorized? " + str(sys.exc_info()))
                 return Response(
                     {'action': "Is Authorized?", 'message': "Something went wrong. Contact CDC for more details"},
                     status=status.HTTP_400_BAD_REQUEST)
@@ -159,7 +166,7 @@ def send_notifications(opening):
         
     except:
         # print what exception is
-        print(traceback.format_exc())
-        
+        db_logger.error(traceback.format_exc())
+        print("Something went wrong while sending remainder notifications")        
        
     

@@ -4,8 +4,13 @@ from django.utils import timezone
 from firebase_admin.exceptions import FirebaseError, InvalidArgumentError
 from firebase_admin import messaging
 from typing import Union, Optional, List
+from django.utils import timezone
+from datetime import datetime
+import logging
+import traceback
 
-
+#initialize logger
+db_logger = logging.getLogger('db')
 
 #import FIREBASE_APP from settings
 from NotificationsApi.settings import FIREBASE_APP 
@@ -80,6 +85,7 @@ class FCMToken(models.Model):
         # Handle any errors that occur during subscription
             if response.failure_count > 0:
               print(response.errors)
+              db_logger.warning(response.errors)
               # errors = [error for error in response.errors]
               # self.deactivate_devices_with_error_results([self.token], errors)
 
@@ -87,7 +93,7 @@ class FCMToken(models.Model):
         except IntegrityError:
             # If the token is already in the database, update the last_updated field of the existing token
             existing_token = FCMToken.objects.get(token=self.token)
-            existing_token.last_updated = timezone.now()
+            existing_token.last_updated = datetime.now()
             existing_token.save(update_fields=['last_updated'])
 
     def send_message(self,message: messaging.Message,app: FIREBASE_APP,**more_send_message_kwargs) -> Union[Optional[messaging.SendResponse], FirebaseError]:
@@ -99,6 +105,7 @@ class FCMToken(models.Model):
             )
         except FirebaseError as e:
            # self.deactivate_devices_with_error_result(self.token, e)
+            db_logger.error(traceback.format_exc())
             print(e)
             return e
 
@@ -113,6 +120,7 @@ class FCMToken(models.Model):
             )(_r_ids, topic, app=app, **more_subscribe_kwargs)
         except:
             print("Something went wrong")
+            db_logger.error(traceback.format_exc())
         
 
     @staticmethod
@@ -130,6 +138,7 @@ class FCMToken(models.Model):
                 None,
             )
         except FirebaseError as e:
+            db_logger.error(e)
             return e
    
 

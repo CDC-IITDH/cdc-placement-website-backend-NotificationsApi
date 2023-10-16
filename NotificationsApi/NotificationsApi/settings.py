@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     #'fcm_django',  # FCM Django
     'corsheaders',  # CORS Headers
     'django_crontab',  # Django Crontab
+    'django_db_logger',  # Django DB Logger
 
 ]
 
@@ -159,6 +160,41 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 FIREBASE_APP = initialize_app(firebase_cred)
 
+#cron jobs
+
 CRONJOBS = [
     ('*/1 * * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"), 'FirebasePushApi.cron.send_remainder_notifications','>> cron.log 2>&1 ')
 ]
+
+
+#logger settings
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+    },
+    'handlers': {
+        'db_log': {
+            'level': 'DEBUG',
+            'class': 'django_db_logger.db_log_handler.DatabaseLogHandler'
+        },
+    },
+    'loggers': {
+        'db': {
+            'handlers': ['db_log'],
+            'level': 'DEBUG'
+        },
+        'django.request': { # logging 500 errors to database
+            'handlers': ['db_log'],
+            'level': 'ERROR',
+            'propagate': False,
+        }
+    }
+}

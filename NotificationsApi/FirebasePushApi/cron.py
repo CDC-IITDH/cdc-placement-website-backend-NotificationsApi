@@ -1,7 +1,10 @@
-
+import logging
 from .models import *
 from .utils import *
 import traceback
+from datetime import datetime
+db_logger = logging.getLogger('db')
+
 def send_remainder_notifications():
     try:
         print("Sending notifications")
@@ -12,9 +15,9 @@ def send_remainder_notifications():
                 try:
                     send_notifications(opening)
                 except:
-                    print(traceback.format_exc())
-                    print("Something went wrong")
+                    db_logger.error(traceback.format_exc())
+                    print("Something went wrong while sending notifications")
 
     except:
-        print(traceback.format_exc())
-        print("Something went wrong")
+        db_logger.error(traceback.format_exc())
+        print("Something went wrong while sending notifications")

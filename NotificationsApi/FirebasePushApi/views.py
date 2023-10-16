@@ -9,6 +9,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from datetime import datetime
+import logging
+
+#inialise logger
+db_logger = logging.getLogger('db')
 
 @api_view(['POST'])
 
@@ -32,6 +36,7 @@ def add_FCMToken(request,id,email,user_type):
     except:
         # print what exception is
       #  print(traceback.format_exc())
+        db_logger.warning("Add FCM Token: " + str(sys.exc_info()))
         return Response({'action': "Add FCM Token", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -77,7 +82,7 @@ def send(request):
         
     except:
         # print what exception is
-        print(traceback.format_exc())
+        db_logger.warning("Send Notification: " + str(sys.exc_info()))
         return Response({'action': "Send Notification", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
     
@@ -105,6 +110,6 @@ def add_opening(request):
                         status=status.HTTP_200_OK)
     except:
         # print what exception is
-        print(traceback.format_exc())
+        db_logger.warning("Add Opening: " + str(sys.exc_info()))
         return Response({'action': "Add Opening", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
