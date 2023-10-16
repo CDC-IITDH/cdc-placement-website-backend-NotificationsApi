@@ -172,3 +172,6 @@ NotificationsApi/NotificationsApi/__pycache__/__init__.cpython-310.pyc
 NotificationsApi/NotificationsApi/__pycache__/settings.cpython-310.pyc
 NotificationsApi/NotificationsApi/__pycache__/urls.cpython-310.pyc
 NotificationsApi/NotificationsApi/__pycache__/wsgi.cpython-310.pyc
+NotificationsApi/__pycache__/manage.cpython-310.pyc
+.gitignore
+.gitignore
