@@ -1,15 +1,31 @@
 # cdc-placement-website-backend-NotificationsApi
+
+## setup
+
+```
+git clone <url to repo>
+cd cdc-placement-website-backend-NotificationsApi
+python3 -m venv venv
+cd NotificationsApi
+./build.sh
+```
+This Will setup things for you.....
+### To run The server 
+``` python3 manage.py runserver```
+### To create SuperUser
+```python3 manage.py createsuperuser```
+
 ## Functionalities 
 * Send Notifications to the user before 1 day,6hrs,3hrs,1 hrs,30 mins before deadline..\
-* can also send custom notifications using send endpoint\
+* can also send custom notifications using ```send/``` endpoint\
 
 ## Usage
-* Trigger add opening endpoint with corresponding request while a opening is listed to students next things will be taken care . It will send notifications before the deadlines
+* Trigger ```addopening``` endpoint with corresponding request while a opening is listed to students and  next things will be taken care . It will send notifications before the deadlines
 * To  send custom notifications use ```/send/``` endpoint
 ## how to encode token 
-```jwt.encode(payload={},key='secret',algorithm="HS256")```
+```jwt.encode(payload={<payload here>},key='secret',algorithm="HS256")```
 
-##  /addtoken/ endpoint
+##  /addtoken/ 
 request_type:```post```\
 This request should have http authorisation header similar to our backend. \
 request_format:
@@ -21,7 +37,7 @@ request_format:
 
 This will automatically add the token to the corresponding user and also adds the token to corresponding groups........ based on the role 
 
-##  /send/ endpoint 
+##  /send/  
 request_type:```post```\
 request_format:
 ```
@@ -50,7 +66,7 @@ your encoded token's payload must be either
   "url":"<url>"  //leaving url empty("") will keep the url to default(portal) 
  }
 ```
-##   /addopening/ endpoint 
+##   /addopening/ 
 request_type:```post``` \
 request_format: 
 ```
