@@ -150,9 +150,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, 'staticfiles/'),
-# )
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'staticfiles/'),
+)
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -163,7 +163,7 @@ FIREBASE_APP = initialize_app(firebase_cred)
 #cron jobs
 
 CRONJOBS = [
-    ('*/1 * * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"), 'FirebasePushApi.cron.send_remainder_notifications','>> cron.log 2>&1 ')
+    ('*/1 * * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.send_remainder_notifications','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 ')
 ]
 
 
