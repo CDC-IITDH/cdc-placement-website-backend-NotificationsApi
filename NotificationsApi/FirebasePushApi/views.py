@@ -47,7 +47,7 @@ def send(request):
     try:
         token = request.data['token']
        # jwt.decode
-        decoded_token = jwt.decode(token, os.environ.get("SECRET_KEY"), algorithms=['HS256'])
+        decoded_token = jwt.decode(token, os.environ.get("JWT_SECRET_KEY"), algorithms=['HS256'])
         title=decoded_token['title']
         body=decoded_token['body']
         url=decoded_token['url']
@@ -92,7 +92,7 @@ def send(request):
 def add_opening(request):
     try:
         token=request.data['token']
-        decoded_token = jwt.decode(token, os.environ.get("SECRET_KEY"), algorithms=['HS256'])
+        decoded_token = jwt.decode(token, os.environ.get("JWT_SECRET_KEY"), algorithms=['HS256'])
         name=decoded_token['company']
         deadline=decoded_token['deadline']
         role=decoded_token['role']

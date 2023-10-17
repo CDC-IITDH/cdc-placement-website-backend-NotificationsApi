@@ -120,33 +120,33 @@ def send_notifications(opening):
         deadline=opening.deadline
         name=opening.name
         role=opening.role
-        # Calculate time differences
-        time_diff = deadline - datetime.now()
+        # Calculate time differencess
+        time_diff = deadline - timezone.now()
         days_diff = time_diff.days
         hours_diff = time_diff.seconds // 3600
         minutes_diff = (time_diff.seconds // 60) % 60
         Notification_no=0
         # Set custom messages based on time differences
-        if days_diff ==0 and hours_diff>23 :
+        if days_diff ==0 and hours_diff>=23 :
             message = f"It's high time to apply for the role before {deadline}. You have less than 24 hrs left."
             Notification_no=1
-        elif hours_diff > 5 and hours_diff<=6 :
-            message = f"It's high time to apply for the role before {deadline}. You have less than {hours_diff} hours left."
+        elif days_diff==0 and hours_diff >= 5 and hours_diff<6 :
+            message = f"It's high time to apply for the role before {deadline}. You have less than {hours_diff+1} hours left."
             Notification_no=2
-        elif hours_diff >2 and hours_diff<=3 :
-            message = f"Hurry up! The deadline to apply for the role is {deadline}. You have less than {hours_diff} hours left."
+        elif days_diff==0 and hours_diff >=2 and hours_diff<3 :
+            message = f"Hurry up! The deadline to apply for the role is {deadline}. You have less than {hours_diff+1} hours left."
             Notification_no=3
         # elif hours_diff > 0 and hours_diff<=1:
         #     message = f"Last chance to apply for the role! The deadline is {deadline}. You have less than {hours_diff} hours left."
         #     Notification_no=4
-        elif minutes_diff > 30 and minutes_diff<=60:
+        elif days_diff==0 and hours_diff==0 and minutes_diff > 30 and minutes_diff<=60:
             message = f"Time is running out! The deadline to apply for the role is {deadline}. You have less than 1 hr left."
             Notification_no=4
-        elif minutes_diff <=30:
+        elif days_diff==0 and hours_diff==0 and minutes_diff <=30:
             message = f"The deadline to apply for the role is {deadline}. You have less than 30 minutes left!"
             Notification_no=5
-        
-        if Notification_no!=0 and Notification_no not in opening.notifications:
+
+        if Notification_no!=0 and (len(opening.notifications)==0 or  str(Notification_no) not in opening.notifications[0] ):
 
             data = {
                 "title": name+" - "+role,
@@ -159,10 +159,16 @@ def send_notifications(opening):
                 data=data,
                 ),topic_name=topic,app=FIREBASE_APP)
             
-            opening.notifications[Notification_no]=True
+            # opening.notifications[Notification_no]=True
+            
+            if len(opening.notifications)==0:
+                opening.notifications.append({str(Notification_no):True})
+            else:
+                opening.notifications[0][str(Notification_no)]=True
             opening.save()
             
-
+        else:
+            print("No new notifications to send to students for opening at " +opening.name)
         
     except:
         # print what exception is

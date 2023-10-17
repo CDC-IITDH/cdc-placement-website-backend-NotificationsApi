@@ -11,7 +11,8 @@ def send_remainder_notifications():
         openings=Opening.objects.all()
         for opening in openings:
             deadline=opening.deadline
-            if(deadline>datetime.now()):
+            if(deadline>timezone.now()):
+                print("Sending notification for "+str(opening.id))
                 try:
                     send_notifications(opening)
                 except:

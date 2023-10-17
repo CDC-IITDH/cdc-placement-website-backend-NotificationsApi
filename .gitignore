@@ -175,3 +175,7 @@ NotificationsApi/NotificationsApi/__pycache__/wsgi.cpython-310.pyc
 NotificationsApi/__pycache__/manage.cpython-310.pyc
 .gitignore
 .gitignore
+NotificationsApi/FirebasePushApi/__pycache__/cron.cpython-310.pyc
+cron.log
+venv/*
+.*

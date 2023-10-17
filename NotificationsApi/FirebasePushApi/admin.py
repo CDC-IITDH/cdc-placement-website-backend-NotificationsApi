@@ -22,5 +22,9 @@ class tokenAdmin(admin.ModelAdmin):
 
 admin.site.register(FCMToken, tokenAdmin)
 
-
-admin.site.register(Opening)
+class openingAdmin(admin.ModelAdmin):
+    list_display = [ 'name','deadline','id']
+    list_filter = ('name','id')
+    search_fields = ['name','id']
+    ordering = ('name',)
+admin.site.register(Opening, openingAdmin)
