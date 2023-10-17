@@ -16,18 +16,21 @@ This Will setup things for you.....
 ```python3 manage.py createsuperuser```
 
 ## Functionalities 
-* Send Notifications to the user before 1 day,6hrs,3hrs,1 hrs,30 mins before deadline..\
-* can also send custom notifications using ```send/``` endpoint\
+* Send Notifications to the user before 1 day, 6hrs, 3hrs, 1 hrs, 30 mins before deadline
+* can also send custom notifications using ```send/``` endpoint
 
 ## Usage
-* Trigger ```addopening``` endpoint with corresponding request while a opening is listed to students and  next things will be taken care . It will send notifications before the deadlines
-* To  send custom notifications use ```/send/``` endpoint
+* Trigger ```addopening/``` endpoint with corresponding request while a opening is listed to students and  next things will be taken care . It will send notifications before the deadlines
+* To  send custom notifications use ```send/``` endpoint
 ## how to encode token 
-```jwt.encode(payload={<payload here>},key='secret',algorithm="HS256")```
+```jwt.encode(payload=<payload here>,key='secret',algorithm="HS256")```
 
-##  /addtoken/ 
-request_type:```post```\
-This request should have http authorisation header similar to our backend. \
+##  addtoken/ 
+request_type: ```post```
+
+> Headers <br>
+> Authorization: "Bearer {tokenID}"
+
 request_format:
 ```
 {
@@ -35,14 +38,14 @@ request_format:
 }
 ```
 
-This will automatically add the token to the corresponding user and also adds the token to corresponding groups........ based on the role 
+* This will automatically add the token to the corresponding user and also adds the token to corresponding topics based on the role 
 
-##  /send/  
+##  send/  
 request_type:```post```\
 request_format:
 ```
 {
-"token":"<your encoded token here>"
+"token":"<your encoded JWT token here>"
 }
 ```
 
@@ -53,10 +56,10 @@ your encoded token's payload must be either
   "topic":"students",(can be students or admins or s_admins)
   "title":"<title>",
   "body":"<body>",
-  "url":"<url>"  //leaving url empty("") will keep the url to default(portal) 
+  "url":"<url>"  //leaving url empty("") will keep the url to default(i.e portal) 
  }
 ```
- this sends the message to students or admins or super admins based on the topic
+* This sends the message to students or admins or super admins based on the topic
 ### b)
 ```
  {
@@ -66,24 +69,24 @@ your encoded token's payload must be either
   "url":"<url>"  //leaving url empty("") will keep the url to default(portal) 
  }
 ```
-##   /addopening/ 
+##   addopening/ 
 request_type:```post``` \
 request_format: 
 ```
 { 
-"token":"<your encoded token here>" 
+"token":"<your encoded JWT token here>" 
 } 
 ```
 your encoded token's payload must be  
 
 ```
 { 
-  "id":"<id>",(can be students or admins or s_admins) 
+  "id":"<id>",
   "company":"<name>", 
   "role":"<role>", 
   "deadline":"%Y-%m-%d %H:%M:%S"   
  } 
 ```
- resending same id will update the details existed 
+ * resending same id will update the details existed which can be used to update deadline 
 
 
