@@ -26,7 +26,7 @@ This Will setup things for you.....
 ```jwt.encode(payload=<payload here>,key='secret',algorithm="HS256")```
 
 ##  addtoken/ 
-request_type: ```post```
+request_type: ```POST```
 
 > Headers <br>
 > Authorization: "Bearer {tokenID}"
@@ -41,7 +41,7 @@ request_format:
 * This will automatically add the token to the corresponding user and also adds the token to corresponding topics based on the role 
 
 ##  send/  
-request_type:```post```\
+request_type: ```POST```\
 request_format:
 ```
 {
@@ -70,7 +70,7 @@ your encoded token's payload must be either
  }
 ```
 ##   addopening/ 
-request_type:```post``` \
+request_type: ```POST``` \
 request_format: 
 ```
 { 
