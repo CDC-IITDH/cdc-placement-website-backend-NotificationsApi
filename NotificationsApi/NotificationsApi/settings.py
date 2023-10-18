@@ -50,6 +50,8 @@ CORS_ORIGIN_WHITELIST = [
     "https://localhost:3000"
 ]
 
+ADMINS = [ ('Karthik Mv', '200010030@iitdh.ac.in'), ('Uttam Kumar', '200010052@iitdh.ac.in')]
+
 
 # Application definition
 
@@ -107,12 +109,26 @@ WSGI_APPLICATION = 'NotificationsApi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# make sqlite3 database for development
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',  # sqlite3 database for development
     }
 }
+
+if not DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ.get("DB_NAME"),
+            'USER': os.environ.get("DB_USER"),
+            'PASSWORD': os.environ.get("DB_PASSWORD"),
+            'HOST': os.environ.get("DB_HOST"),
+            'PORT': os.environ.get("DB_PORT"),
+        },
+    }
 
 
 # Password validation
@@ -171,6 +187,22 @@ CRONJOBS = [
 
 #,'>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 ' as it may increase size of log file
 
+
+EMAIL_BACKEND = ''
+if DEBUG:
+    # file based email backend for development
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = './test-emails'
+else:
+    # SMTP backend for production
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get("EMAIL")  # 'email here'
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")  # 'password here'
+
+
 #logger settings
 
 LOGGING = {
@@ -189,10 +221,14 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'django_db_logger.db_log_handler.DatabaseLogHandler'
         },
+        'mail_admins': {
+            'level': 'WARNING',
+            'class': 'django.utils.log.AdminEmailHandler',
+        }
     },
     'loggers': {
         'db': {
-            'handlers': ['db_log'],
+            'handlers': ['db_log', 'mail_admins'],
             'level': 'DEBUG'
         },
         'django.request': { # logging 500 errors to database
