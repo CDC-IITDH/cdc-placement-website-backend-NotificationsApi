@@ -120,7 +120,7 @@ def send_notifications(opening):
         topic="students"
         deadline=opening.deadline
         itz = pytz.timezone('Asia/Kolkata')
-        deadline = itz.localize(deadline)
+        deadline = deadline.astimezone(itz)
         name=opening.name
         role=opening.role
         # Calculate time differencess
