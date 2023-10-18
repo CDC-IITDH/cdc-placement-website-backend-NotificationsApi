@@ -43,11 +43,13 @@ DEBUG = os.environ.get('DEBUG') == "True" #debug from env
 
 
 ALLOWED_HOSTS = ['*']
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = [
     "https://cdc.iitdh.ac.in",
     "http://localhost:3000",
     "https://localhost:3000",
+    "https://notifications.cdc-iitdh.tech",
+    "http://notifications.cdc-iitdh.tech",
 ]
 
 ADMINS = [ ('Karthik Mv', '200010030@iitdh.ac.in'), ('Uttam Kumar', '200010052@iitdh.ac.in')]
@@ -113,22 +115,14 @@ WSGI_APPLICATION = 'NotificationsApi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # sqlite3 database for development
-    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get("DB_NAME"),
+        'USER': os.environ.get("DB_USER"),
+        'PASSWORD': os.environ.get("DB_PASSWORD"),
+        'HOST': os.environ.get("DB_HOST"),
+        'PORT': os.environ.get("DB_PORT"),
+    },
 }
-
-if not DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ.get("DB_NAME"),
-            'USER': os.environ.get("DB_USER"),
-            'PASSWORD': os.environ.get("DB_PASSWORD"),
-            'HOST': os.environ.get("DB_HOST"),
-            'PORT': os.environ.get("DB_PORT"),
-        },
-    }
 
 
 # Password validation

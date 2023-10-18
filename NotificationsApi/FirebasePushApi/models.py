@@ -69,27 +69,28 @@ class FCMToken(models.Model):
             existing_token.delete()
         try:
             super().save(*args, **kwargs)
-            if self.user.user_type == 'admin':
-              topic_name = 'admins'
-            elif self.user.user_type == 'student':
-              topic_name = 'students'
-            elif self.user.user_type == 's_admin':
-                topic_name = 's_admins'
-            else:
-            # If the user has an unknown role, do not subscribe to any topic
-              return
+            for user_type in self.user.user_type:
+                if user_type == 'admin':
+                    topic_name = 'admins'
+                elif user_type == 'student':
+                    topic_name = 'students'
+                elif user_type == 's_admin':
+                    topic_name = 's_admins'
+                else:
+                    # If the user has an unknown role, do not subscribe to any topic
+                    continue
 
-        # Subscribe the token to the appropriate topic
-            topic = f'/topics/{topic_name}'
-            response = messaging.subscribe_to_topic(self.token, topic, app=FIREBASE_APP)
+                # Subscribe the token to the appropriate topic
+                topic = f'/topics/{topic_name}'
+                response = messaging.subscribe_to_topic(self.token, topic, app=FIREBASE_APP)
 
-        # Handle any errors that occur during subscription
-            if response.failure_count > 0:
-              print(response.errors)
-              db_logger.warning(response.errors)
-              # errors = [error for error in response.errors]
-              # self.deactivate_devices_with_error_results([self.token], errors)
-
+                # Handle any errors that occur during subscription
+                if response.failure_count > 0:
+                    print(response.errors)
+                    db_logger.warning(response.errors)
+                    # errors = [error for error in response.errors]
+                    # self.deactivate_devices_with_error_results([self.token], errors)
+           
 
         except IntegrityError:
             # If the token is already in the database, update the last_updated field of the existing token
