@@ -43,11 +43,11 @@ DEBUG = os.environ.get('DEBUG') == "True" #debug from env
 
 
 ALLOWED_HOSTS = ['*']
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = [
     "https://cdc.iitdh.ac.in",
     "http://localhost:3000",
-    "https://localhost:3000"
+    "https://localhost:3000",
 ]
 
 ADMINS = [ ('Karthik Mv', '200010030@iitdh.ac.in'), ('Uttam Kumar', '200010052@iitdh.ac.in')]

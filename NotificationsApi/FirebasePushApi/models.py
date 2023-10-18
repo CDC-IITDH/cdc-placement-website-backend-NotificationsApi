@@ -1,5 +1,6 @@
 from django.db import models
 from django.db import IntegrityError
+from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
 from firebase_admin.exceptions import FirebaseError, InvalidArgumentError
 from firebase_admin import messaging
@@ -24,7 +25,7 @@ class User(models.Model):
     )
     id = models.CharField(blank=False, max_length=25, db_index=True)
     email = models.CharField(max_length=255, blank=False, null=False,primary_key=True)
-    user_type = models.CharField(max_length=7, choices=ROLE_CHOICES, blank=False, null=False)
+    user_type = ArrayField(models.CharField(blank=False, max_length=10, choices=ROLE_CHOICES), size=4, default=list, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     
 
