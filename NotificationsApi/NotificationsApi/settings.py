@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'corsheaders',  # CORS Headers
     'django_crontab',  # Django Crontab
     'django_db_logger',  # Django DB Logger
+    'import_export',  # Import Export
 
 ]
 

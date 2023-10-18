@@ -1,12 +1,12 @@
 from django.contrib import admin
-
+from import_export.admin import ImportExportModelAdmin
 # Register your models here.
 from .models import FCMToken,User,Opening
 
 
 
 #make user name visible in admin panel
-class UserAdmin(admin.ModelAdmin):
+class UserAdmin(ImportExportModelAdmin,admin.ModelAdmin):
     list_display = ('email', 'user_type')
     list_filter = ('user_type',)
     search_fields = ['email']
@@ -14,7 +14,7 @@ class UserAdmin(admin.ModelAdmin):
 
 admin.site.register(User, UserAdmin)
 
-class tokenAdmin(admin.ModelAdmin):
+class tokenAdmin(ImportExportModelAdmin,admin.ModelAdmin):
     list_display = [ 'user','created_at','last_updated']
     list_filter = ('user',)
     search_fields = ['user']
@@ -22,7 +22,7 @@ class tokenAdmin(admin.ModelAdmin):
 
 admin.site.register(FCMToken, tokenAdmin)
 
-class openingAdmin(admin.ModelAdmin):
+class openingAdmin(ImportExportModelAdmin,admin.ModelAdmin):
     list_display = [ 'name','deadline','id']
     list_filter = ('name','id')
     search_fields = ['name','id']
