@@ -14,6 +14,7 @@ from firebase_admin import messaging
 from firebase_admin.messaging import Message, Notification
 from datetime import datetime
 import logging
+import pytz
 
 #inialise logger
 db_logger = logging.getLogger('db')
@@ -118,6 +119,8 @@ def send_notifications(opening):
      
         topic="students"
         deadline=opening.deadline
+        itz = pytz.timezone('Asia/Kolkata')
+        deadline = itz.localize(deadline)
         name=opening.name
         role=opening.role
         # Calculate time differencess
