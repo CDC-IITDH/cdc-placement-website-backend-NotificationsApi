@@ -15,6 +15,7 @@ from firebase_admin.messaging import Message, Notification
 from datetime import datetime
 import logging
 import pytz
+import requests as rq
 
 #inialise logger
 db_logger = logging.getLogger('db')
@@ -157,18 +158,29 @@ def send_notifications(opening):
                 "icon_url": "https://cdc.iitdh.ac.in/images/CDC_Logos/favicon.ico",
                 "url": "https://cdc.iitdh.ac.in/portal/",
                 }
-        
-            FCMToken.send_topic_message(Message(
-                data=data,
-                ),topic_name=topic,app=FIREBASE_APP)
-            
-            # opening.notifications[Notification_no]=True
-            
-            if len(opening.notifications)==0:
-                opening.notifications.append({str(Notification_no):True})
+            resp=rq.post(os.environ.get("BACKEND_FETCH_API_URL"),data={"opening_id":opening.id})
+            if(resp.status_code!=200):
+                print("Something went wrong while sending remainder notifications")
+                db_logger.error("Something went wrong while sending remainder notifications"+str(resp))
             else:
-                opening.notifications[0][str(Notification_no)]=True
-            opening.save()
+                devices=[]
+                for mail in resp.data["eligible_students"]:
+                    devices.append(FCMToken.objects.get(user__email=mail).token)
+                msg=messaging.MulticastMessage(data=data,
+                                           tokens=devices)
+                resp=messaging.send_multicast(msg,app=FIREBASE_APP)
+                if(resp.failure_count>0):
+                    print("Something went wrong while sending remainder notifications")
+                    db_logger.error("Something went wrong while sending remainder notifications"+str(resp))
+                else:
+                    print("Successfully sent remainder notifications")
+                    if len(opening.notifications)==0:
+                        opening.notifications.append({str(Notification_no):True})
+                    else:
+                        opening.notifications[0][str(Notification_no)]=True
+                        opening.save()
+
+        
             
         else:
             print("No new notifications to send to students for opening at " +opening.name)
