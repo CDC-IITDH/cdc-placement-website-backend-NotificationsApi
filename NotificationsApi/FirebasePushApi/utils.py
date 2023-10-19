@@ -161,13 +161,18 @@ def send_notifications(opening):
                 }
             header=jwt.encode({"typ":"JWT","alg":"HS256","kid":"1"},os.environ.get("JWT_SECRET_KEY"),algorithm="HS256")
             headers={"Authorization":"Bearer "+header}
-            resp=rq.post(os.environ.get("BACKEND_FETCH_API_URL"),headers=headers,data={"opening_id":str(opening.id)})
+            url = os.environ.get("BACKEND_FETCH_API_URL")+"?opening_id="+str(opening.id)
+            payload = {}
+            resp = requests.request("GET", url, headers=headers, data=payload)
             if(resp.status_code!=200):
                 print("Something went wrong while sending remainder notifications")
                 db_logger.error("Something went wrong while sending remainder notifications"+str(resp))
             else:
                 devices=[]
-                for mail in resp.data["eligible_students"]:
+                if not resp.data["eligible_students"][0]:
+                    print("No new notifications to send to students for opening at " +opening.name)
+                    return
+                for mail in resp.data["eligible_students"][1]:
                     devices.append(FCMToken.objects.get(user__email=mail).token)
                 msg=messaging.MulticastMessage(data=data,
                                            tokens=devices)
