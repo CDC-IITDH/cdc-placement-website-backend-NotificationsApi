@@ -163,16 +163,18 @@ def send_notifications(opening):
             headers={"Authorization":"Bearer "+header}
             url = os.environ.get("BACKEND_FETCH_API_URL")+"?opening_id="+str(opening.id)
             payload = {}
-            resp = requests.request("GET", url, headers=headers, data=payload)
+            resp = rq.request("GET", url, headers=headers, data=payload)
+            db_logger.warning(resp.text)
+            res=json.loads(resp.text)
             if(resp.status_code!=200):
                 print("Something went wrong while sending remainder notifications")
                 db_logger.error("Something went wrong while sending remainder notifications"+str(resp))
             else:
                 devices=[]
-                if not resp.data["eligible_students"][0]:
+                if not res["eligible_students"][0]:
                     print("No new notifications to send to students for opening at " +opening.name)
                     return
-                for mail in resp.data["eligible_students"][1]:
+                for mail in res["eligible_students"][1]:
                     devices.append(FCMToken.objects.get(user__email=mail).token)
                 msg=messaging.MulticastMessage(data=data,
                                            tokens=devices)
