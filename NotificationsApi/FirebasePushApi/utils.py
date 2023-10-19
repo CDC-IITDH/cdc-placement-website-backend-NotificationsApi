@@ -16,6 +16,7 @@ from datetime import datetime
 import logging
 import pytz
 import requests as rq
+import jwt
 
 #inialise logger
 db_logger = logging.getLogger('db')
@@ -158,7 +159,9 @@ def send_notifications(opening):
                 "icon_url": "https://cdc.iitdh.ac.in/images/CDC_Logos/favicon.ico",
                 "url": "https://cdc.iitdh.ac.in/portal/",
                 }
-            resp=rq.post(os.environ.get("BACKEND_FETCH_API_URL"),data={"opening_id":opening.id})
+            header=jwt.encode({"typ":"JWT","alg":"HS256","kid":"1"},os.environ.get("JWT_SECRET_KEY"),algorithm="HS256")
+            headers={"Authorization":"Bearer "+header}
+            resp=rq.post(os.environ.get("BACKEND_FETCH_API_URL"),headers=headers,data={"opening_id":str(opening.id)})
             if(resp.status_code!=200):
                 print("Something went wrong while sending remainder notifications")
                 db_logger.error("Something went wrong while sending remainder notifications"+str(resp))
