@@ -164,7 +164,6 @@ def send_notifications(opening):
             url = os.environ.get("BACKEND_FETCH_API_URL")+"?opening_id="+str(opening.id)
             payload = {}
             resp = rq.request("GET", url, headers=headers, data=payload)
-            db_logger.warning(resp.text)
             res=json.loads(resp.text)
             if(resp.status_code!=200):
                 print("Something went wrong while sending remainder notifications")
@@ -175,7 +174,9 @@ def send_notifications(opening):
                     print("No new notifications to send to students for opening at " +opening.name)
                     return
                 for mail in res["eligible_students"][1]:
-                    devices.append(FCMToken.objects.get(user__email=mail).token)
+                    tokens=FCMToken.objects.filter(user__email=mail)
+                    for token in tokens:
+                        devices.append(token.token)
                 msg=messaging.MulticastMessage(data=data,
                                            tokens=devices)
                 resp=messaging.send_multicast(msg,app=FIREBASE_APP)
