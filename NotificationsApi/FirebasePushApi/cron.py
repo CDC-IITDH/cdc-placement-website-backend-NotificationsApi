@@ -7,7 +7,7 @@ db_logger = logging.getLogger('db')
 
 def send_remainder_notifications():
     try:
-        print("Sending notifications")
+        print("Sending notifications at "+str(datetime.now()))
         openings=Opening.objects.all()
         for opening in openings:
             deadline=opening.deadline

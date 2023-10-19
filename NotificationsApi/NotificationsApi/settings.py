@@ -176,10 +176,10 @@ FIREBASE_APP = initialize_app(firebase_cred)
 #cron jobs
 
 CRONJOBS = [
-    ('*/30 * * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.send_remainder_notifications')
+    ('*/30 * * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.send_remainder_notifications','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 '),
+    # ('0 0 */3 * *'+' rm '+ STATICFILES_DIRS[0] + 'cron.log 2>&1 ') add a cron to delete file
 ]
 
-#,'>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 ' as it may increase size of log file
 
 
 EMAIL_BACKEND = ''

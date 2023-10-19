@@ -189,7 +189,7 @@ def send_notifications(opening):
                         opening.notifications.append({str(Notification_no):True})
                     else:
                         opening.notifications[0][str(Notification_no)]=True
-                        opening.save()
+                    opening.save()
 
         
             
