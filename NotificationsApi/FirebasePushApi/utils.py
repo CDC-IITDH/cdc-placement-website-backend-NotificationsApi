@@ -17,6 +17,12 @@ import logging
 import pytz
 import requests as rq
 import jwt
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+import background_task
+import pdfkit
 
 #inialise logger
 db_logger = logging.getLogger('db')
@@ -126,7 +132,7 @@ def send_notifications(opening):
         name=opening.name
         role=opening.role
         # Calculate time differencess
-        time_diff = deadline - timezone.now()
+        time_diff = deadline - timezone.localtime(timezone.now())
         days_diff = time_diff.days
         hours_diff = time_diff.seconds // 3600
         minutes_diff = (time_diff.seconds // 60) % 60
@@ -136,14 +142,11 @@ def send_notifications(opening):
             message = f"It's high time to apply for the role before {deadline}. You have less than 24 hrs left."
             Notification_no=1
         elif days_diff==0 and hours_diff >= 5 and hours_diff<6 :
-            message = f"It's high time to apply for the role before {deadline}. You have less than {hours_diff+1} hours left."
+            message = f"Last few hours to apply for the role! The deadline is {deadline}. You have less than {hours_diff+1} hours left."
             Notification_no=2
         elif days_diff==0 and hours_diff >=2 and hours_diff<3 :
             message = f"Hurry up! The deadline to apply for the role is {deadline}. You have less than {hours_diff+1} hours left."
             Notification_no=3
-        # elif hours_diff > 0 and hours_diff<=1:
-        #     message = f"Last chance to apply for the role! The deadline is {deadline}. You have less than {hours_diff} hours left."
-        #     Notification_no=4
         elif days_diff==0 and hours_diff==0 and minutes_diff > 30 and minutes_diff<=60:
             message = f"Time is running out! The deadline to apply for the role is {deadline}. You have less than 1 hr left."
             Notification_no=4
@@ -170,19 +173,20 @@ def send_notifications(opening):
                 db_logger.error("Something went wrong while sending remainder notifications"+str(resp))
             else:
                 devices=[]
+                tokens=[]
                 if not res["eligible_students"][0]:
                     print("No new notifications to send to students for opening at " +opening.name)
                     return
                 for mail in res["eligible_students"][1]:
-                    tokens=FCMToken.objects.filter(user__email=mail)
-                    for token in tokens:
-                        devices.append(token.token)
+                    tokens+=FCMToken.objects.filter(user__email=mail)
+                for token in tokens:
+                    devices.append(token.token)
                 msg=messaging.MulticastMessage(data=data,
                                            tokens=devices)
                 resp=messaging.send_multicast(msg,app=FIREBASE_APP)
-                if(resp.failure_count>0):
-                    print("Something went wrong while sending remainder notifications")
-                    db_logger.error("Something went wrong while sending remainder notifications"+str(resp))
+                if(resp.failure_count==len(devices)):
+                    print("Something went wrong while sending remainder notifications no one received the notification")
+                    db_logger.error("Something went wrong while sending remainder notifications no one received them check the service once"+str(resp))
                 else:
                     print("Successfully sent remainder notifications")
                     if len(opening.notifications)==0:
@@ -190,9 +194,10 @@ def send_notifications(opening):
                     else:
                         opening.notifications[0][str(Notification_no)]=True
                     opening.save()
-
-        
-            
+                    for i in range(len(resp.responses)):
+                        if not resp.responses[i].success:
+                            tokens[i].deactivate_devices_with_error_result(tokens[i].token,resp.responses[i].exception)
+                               
         else:
             print("No new notifications to send to students for opening at " +opening.name)
         
@@ -202,3 +207,29 @@ def send_notifications(opening):
         print("Something went wrong while sending remainder notifications")        
        
     
+@background_task.background(schedule=2)
+def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
+    try:
+        if not isinstance(data, dict):
+            data = json.loads(data)
+        html_content = render_to_string(template, data)  # render with dynamic value
+        text_content = strip_tags(html_content)
+
+        email_from = settings.EMAIL_HOST_USER
+        if type(email_to) is list:
+            recipient_list = [str(email) for email in email_to]
+        else:
+            recipient_list = [str(email_to), ]
+
+        msg = EmailMultiAlternatives(subject, text_content, email_from,None,bcc=recipient_list)
+        msg.attach_alternative(html_content, "text/html")
+        if attachment_jnf_response:
+            # logger.info(attachment_jnf_response)
+            pdf = pdfkit.from_string(attachment_jnf_response['html'], False,
+                                     options={"--enable-local-file-access": "", '--dpi': '96'})
+            msg.attach(attachment_jnf_response['name'], pdf, 'application/pdf')
+        msg.send()
+        return True
+    except:
+        db_logger.error("Send Email: " + str(sys.exc_info()))
+        return False

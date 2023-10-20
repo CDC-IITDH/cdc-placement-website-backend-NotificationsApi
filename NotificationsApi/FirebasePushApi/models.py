@@ -2,7 +2,7 @@ from django.db import models
 from django.db import IntegrityError
 from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
-from firebase_admin.exceptions import FirebaseError, InvalidArgumentError
+from firebase_admin.exceptions import *
 from firebase_admin import messaging
 from typing import Union, Optional, List
 from django.utils import timezone
@@ -106,9 +106,7 @@ class FCMToken(models.Model):
                 None,
             )
         except FirebaseError as e:
-           # self.deactivate_devices_with_error_result(self.token, e)
-            db_logger.error(traceback.format_exc())
-            print(e)
+            self.deactivate_devices_with_error_result(self.token, e)
             return e
 
     def handle_topic_subscription(self,topic: str,app: FIREBASE_APP,should_subscribe: bool,**more_subscribe_kwargs) :
@@ -123,7 +121,33 @@ class FCMToken(models.Model):
         except:
             print("Something went wrong")
             db_logger.error(traceback.format_exc())
-        
+
+    def deactivate_devices_with_error_result(self,registration_token: str, error: FirebaseError) -> None:
+        """Deactivates devices with the given registration token and error."""
+        # Check if the error was a registration error
+        if isinstance(error, messaging.UnregisteredError):
+            # Delete the token from the database
+            FCMToken.objects.filter(token=registration_token).delete()
+            print("Unregistered Token of user: "+self.user.email+" deleted")
+        elif isinstance(error, UnavailableError):
+            # If the error was an unavailable error, try again later
+            pass
+        elif isinstance(error, InternalError):
+            # If the error was an internal error, try again later
+            pass
+        elif isinstance(error, InvalidArgumentError):
+            # If the error was an invalid argument error, This is how new api reports error
+            FCMToken.objects.filter(token=registration_token).delete()
+            print("Invalid Token of user: "+self.user.email+" deleted")
+        else:
+            # If the error is unknown, log it
+            db_logger.error(error)
+            FCMToken.objects.filter(token=registration_token).delete()
+            print("Unknown Token of user: "+self.user.email+" deleted")
+
+   
+    
+    
 
     @staticmethod
     def send_topic_message(
@@ -142,13 +166,8 @@ class FCMToken(models.Model):
         except FirebaseError as e:
             db_logger.error(e)
             return e
-   
-
-
 
 
     def __str__(self):
         return self.token
-from django.db import models
 
-# Create your models here.
