@@ -2,6 +2,7 @@ NotificationsApi/FirebasePushApi/__pycache__/*
 NotificationsApi/FirebasePushApi/migrations/*
 NotificationsApi/static/*
 NotificationsApi/dev.env
+NotificationsApi/test-emails/*
 cred.json
 NotificationsApi/NotificationsApi/__pycache__/*
 NotificationsApi/__pycache__/*

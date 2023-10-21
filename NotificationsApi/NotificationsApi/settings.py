@@ -93,7 +93,7 @@ ROOT_URLCONF = 'NotificationsApi.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -178,7 +178,9 @@ FIREBASE_APP = initialize_app(firebase_cred)
 
 CRONJOBS = [
     ('*/30 * * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.send_remainder_notifications','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 '),
-    # ('0 0 */3 * *'+' rm '+ STATICFILES_DIRS[0] + 'cron.log 2>&1 ') add a cron to delete file
+    #send remainder mails every day at 8:00 AM
+    ('0 3 * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.send_remainder_mails','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 '),
+# 3 because of timezone difference ubuntu runs cron in UTC
 ]
 
 

@@ -206,7 +206,37 @@ def send_notifications(opening):
         db_logger.error(traceback.format_exc())
         print("Something went wrong while sending remainder notifications")        
        
-    
+def send_mails_opening(opening):
+    try:
+        header=jwt.encode({"typ":"JWT","alg":"HS256","kid":"1"},os.environ.get("JWT_SECRET_KEY"),algorithm="HS256")
+        headers={"Authorization":"Bearer "+header}
+        url = os.environ.get("BACKEND_FETCH_API_URL")+"?opening_id="+str(opening.id)
+        payload = {}
+        resp = rq.request("GET", url, headers=headers, data=payload)
+        res=json.loads(resp.text)
+        if(resp.status_code!=200):
+            print("Something went wrong while sending mails to students")
+            db_logger.error("Something went wrong while sending mails to students"+str(resp))
+        else:
+            if not res["eligible_students"][0]:
+                print("No new mails to send to students for opening at " +opening.name)
+                return
+            opening_link="https://cdc.iitdh.ac.in/portal/student/dashboard/placements/"+str(opening.id)
+            deadline=timezone.localtime(opening.deadline)
+            sendEmail(res["eligible_students"][1], "Reminder for "+opening.name+" - "+opening.role, {"company_name":opening.name,"designation":opening.role,
+                                                                                                    "deadline":deadline.strftime("%d %B %Y, %I:%M %p"),
+                                                                                                    "link":opening_link,
+                                                                                                    "opening_type":"Placement",}, "notify_students_opening_remainder.html")
+            
+
+        print("Successfully sent mails to students")
+    except:
+        # print what exception is
+        db_logger.error(traceback.format_exc())
+        print("Something went wrong while sending mails to students")
+
+
+
 @background_task.background(schedule=2)
 def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
     try:
