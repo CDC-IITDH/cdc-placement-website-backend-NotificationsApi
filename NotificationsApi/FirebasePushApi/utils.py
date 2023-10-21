@@ -205,7 +205,8 @@ def send_notifications(opening):
         # print what exception is
         db_logger.error(traceback.format_exc())
         print("Something went wrong while sending remainder notifications")        
-       
+
+@background_task.background(schedule=2)
 def send_mails_opening(opening):
     try:
         header=jwt.encode({"typ":"JWT","alg":"HS256","kid":"1"},os.environ.get("JWT_SECRET_KEY"),algorithm="HS256")
