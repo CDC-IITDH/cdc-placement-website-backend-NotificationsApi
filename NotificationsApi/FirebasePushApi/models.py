@@ -68,35 +68,49 @@ class FCMToken(models.Model):
             # self.user = existing_token.user
             existing_token.delete()
         try:
-            super().save(*args, **kwargs)
-            for user_type in self.user.user_type:
-                if user_type == 'admin':
-                    topic_name = 'admins'
-                elif user_type == 'student':
-                    topic_name = 'students'
-                elif user_type == 's_admin':
-                    topic_name = 's_admins'
-                else:
-                    # If the user has an unknown role, do not subscribe to any topic
-                    continue
+            if not FCMToken.objects.filter(token=self.token,user=self.user).exists():
+                super().save(*args, **kwargs)
+                for user_type in self.user.user_type:
+                    if user_type == 'admin':
+                        topic_name = 'admins'
+                    elif user_type == 'student':
+                        topic_name = 'students'
+                    elif user_type == 's_admin':
+                        topic_name = 's_admins'
+                    else:
+                        # If the user has an unknown role, do not subscribe to any topic
+                        continue
 
                 # Subscribe the token to the appropriate topic
-                topic = f'/topics/{topic_name}'
-                response = messaging.subscribe_to_topic(self.token, topic, app=FIREBASE_APP)
-
+                    topic = f'/topics/{topic_name}'
+                    response = messaging.subscribe_to_topic(self.token, topic, app=FIREBASE_APP)
                 # Handle any errors that occur during subscription
-                if response.failure_count > 0:
-                    print(response.errors)
-                    db_logger.warning(response.errors)
+                    if response.failure_count > 0:
+                        print(response.errors)
+                        db_logger.warning(response.errors)
                     # errors = [error for error in response.errors]
                     # self.deactivate_devices_with_error_results([self.token], errors)
-           
-
-        except IntegrityError:
-            # If the token is already in the database, update the last_updated field of the existing token
-            existing_token = FCMToken.objects.get(token=self.token)
-            existing_token.last_updated = datetime.now()
-            existing_token.save(update_fields=['last_updated'])
+                data = {
+                    "title": "Welcome :)",
+                    "body": "Thanks for subscribing to CDC Notifications",
+                    "icon_url": "https://cdc.iitdh.ac.in/images/CDC_Logos/favicon.ico",
+                    "url": "https://cdc.iitdh.ac.in/portal/" ,
+                    }                   
+                message = messaging.Message(
+                    data=data,
+                    token=self.token,
+                )
+                #  send a message to the user thanks for subscribing  if there are no errors 
+                messaging.send(message, app=FIREBASE_APP)
+            else:
+                # If the token is already in the database, update the last_updated field of the existing token
+                self.created_at=FCMToken.objects.get(token=self.token).created_at
+                self.last_updated=datetime.now()
+                super().save(*args, **kwargs)
+                    
+        except:
+            print("Something went wrong")
+            db_logger.error(traceback.format_exc())
 
     def send_message(self,message: messaging.Message,app: FIREBASE_APP,**more_send_message_kwargs) -> Union[Optional[messaging.SendResponse], FirebaseError]:
         message.token = self.token
