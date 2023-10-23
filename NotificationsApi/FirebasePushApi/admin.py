@@ -17,7 +17,7 @@ admin.site.register(User, UserAdmin)
 class tokenAdmin(ImportExportModelAdmin,admin.ModelAdmin):
     list_display = [ 'user','created_at','last_updated']
     list_filter = ('user',)
-    search_fields = ['user']
+    search_fields = ['user__email']
     ordering = ('created_at',)
 
 admin.site.register(FCMToken, tokenAdmin)
