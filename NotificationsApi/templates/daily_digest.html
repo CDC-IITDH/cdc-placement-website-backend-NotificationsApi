@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <title>Daily Digest</title>
+    <!--[if mso]>
+      <noscript>
+        <xml>
+          <o:OfficeDocumentSettings>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+          </o:OfficeDocumentSettings>
+        </xml>
+      </noscript>
+    <![endif]-->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      table,
+      td,
+      div,
+      h1,
+      p {
+        font-family: "Roboto", sans-serif;
+      }
+    </style>
+  </head>
+  <body style="margin: 0; padding: 0">
+    <table
+      role="presentation"
+      style="
+        width: 100%;
+        border-collapse: collapse;
+        border: 0;
+        border-spacing: 0;
+        background: #ffffff;
+      "
+    >
+      <tr>
+        <td align="center" style="padding: 0">
+          <table
+            role="presentation"
+            style="
+              width: 602px;
+              border-collapse: collapse;
+              border: 1px solid #334878;
+              border-spacing: 0;
+              text-align: left;
+            "
+          >
+            <tr>
+              <td
+                align="center"
+                style="padding: 40px 0 30px 0; background: #334878"
+              >
+                <img
+                  src="https://drive.google.com/uc?id=1QTA6dB7jnsZfU1kzyUqfD_2V5xODpWFt"
+                  alt=""
+                  width="200"
+                  style="height: auto; display: block"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 36px 30px 42px 30px">
+                <table
+                  role="presentation"
+                  style="
+                    width: 100%;
+                    border-collapse: collapse;
+                    border: 0;
+                    border-spacing: 0;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 0 0 36px 0; color: #153643">
+                      <h1 style="font-size: 24px; margin: 0 0 20px 0">
+                        Daily Digest
+                      </h1>
+                      <p
+                        style="
+                          margin: 0 0 12px 0;
+                          font-size: 16px;
+                          line-height: 24px;
+                        "
+                      >
+                        Here's your daily digest of important Events and
+                        Deadlines for Today as of Now.
+                      </p>
+                      <table
+                        style="
+                          width: 100%;
+                          border-collapse: collapse;
+                          border: 0;
+                          border-spacing: 0;
+                        "
+                      >
+                        <tr>
+                          <td
+                            style="
+                              padding: 0 0 12px 0;
+                              font-size: 16px;
+                              line-height: 24px;
+                            "
+                          >
+                            <!-- Insert your digest content here -->
+                            {% if events %}
+
+                            <table
+                              style="
+                                border: 1px solid #cccccc;
+                                width: 100%;
+                                border-collapse: collapse;
+                                background-color: #ffffff;
+                              "
+                            >
+                              <tr>
+                                <th
+                                  style="
+                                    background-color: #334878;
+                                    color: #ffffff;
+                                    padding: 12px;
+                                    text-align: left;
+                                  "
+                                >
+                                  Company-Designation
+                                </th>
+                                <th
+                                  style="
+                                    background-color: #334878;
+                                    color: #ffffff;
+                                    padding: 12px;
+                                    text-align: left;
+                                  "
+                                >
+                                  Event Type
+                                </th>
+                                <th
+                                  style="
+                                    background-color: #334878;
+                                    color: #ffffff;
+                                    padding: 12px;
+                                    text-align: left;
+                                  "
+                                >
+                                  Date
+                                </th>
+                                <th
+                                  style="
+                                    background-color: #334878;
+                                    color: #ffffff;
+                                    padding: 12px;
+                                    text-align: left;
+                                  "
+                                >
+                                  Timings
+                                </th>
+                              </tr>
+                              {% for i,j,k,l in events %}
+                              <tr>
+                                <td
+                                  style="
+                                    background-color: #f8f8f8;
+                                    padding: 12px;
+                                  "
+                                >
+                                  {{ i }}
+                                </td>
+                                <td
+                                  style="
+                                    background-color: #f8f8f8;
+                                    padding: 12px;
+                                  "
+                                >
+                                  {{ j }}
+                                </td>
+                                <td
+                                  style="
+                                    background-color: #f8f8f8;
+                                    padding: 12px;
+                                  "
+                                >
+                                  {{ k }}
+                                </td>
+                                <td
+                                  style="
+                                    background-color: #f8f8f8;
+                                    padding: 12px;
+                                  "
+                                >
+                                  {{ l }}
+                                </td>
+                              </tr>
+
+                              {% endfor %}
+                            </table>
+                            {%else%}
+                            <!-- No events today image and message -->
+                            <div style="text-align: center; margin: 20px">
+                              <img
+                                src="https://i.ibb.co/9y28Y1r/undraw-chore-list-re-2lq8-1.png"
+                                alt="No Events Today"
+                                style="max-width: 100%; height: auto"
+                              />
+                              <p
+                                style="
+                                  font-size: 16px;
+                                  color: #334878;
+                                  margin: 10px 0;
+                                  font-weight: bold;
+                                "
+                              >
+                                No events scheduled for today as of this Time.
+                              </p>
+                            </div>
+
+                            {% endif %}
+                            <p
+                              style="
+                                margin: 0 0 12px 0;
+                                font-size: 16px;
+                                line-height: 24px;
+                                font-family: 'Roboto', sans-serif;
+                              "
+                            >
+                              Stay tuned for future events and opportunities. If
+                              you have any questions or need assistance, please
+                              don't hesitate to reach out to us.
+                            </p>
+                            <div style="margin-top: 20px">
+                              <h2
+                                style="
+                                  font-size: 18px;
+                                  margin: 0;
+                                  font-family: 'Roboto', sans-serif;
+                                "
+                              >
+                                Conditions and Guidelines:
+                              </h2>
+                              <ul
+                                style="
+                                  margin: 12px 0 0 0;
+                                  font-size: 16px;
+                                  line-height: 24px;
+                                  font-family: 'Roboto', sans-serif;
+                                "
+                              >
+                                <li>
+                                  Attendance is mandatory for all events That
+                                  you registered for.
+                                </li>
+                                <li>
+                                  Please arrive on time for scheduled events.
+                                </li>
+                                <li>
+                                  Proper dress code is required for specific
+                                  events (formal attire etc.).
+                                </li>
+                                <li>
+                                  Bring your student ID card for Interviews and
+                                  Assesments.
+                                </li>
+                                <li>
+                                  For any changes or cancellations, please check
+                                  your email or the portal for updates.
+                                </li>
+                                <li>
+                                  In case you receive an event notification via
+                                  email that is not mentioned in this document,
+                                  please note that the email notification will
+                                  take precedence and is considered final.
+                                </li>
+                              </ul>
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 30px; background: #334878">
+                <table
+                  role="presentation"
+                  style="
+                    width: 100%;
+                    border-collapse: collapse;
+                    border: 0;
+                    border-spacing: 0;
+                    font-size: 9px;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 0; width: 50%" align="left">
+                      <p
+                        style="
+                          margin: 0;
+                          font-size: 14px;
+                          line-height: 16px;
+                          font-family: 'Roboto', sans-serif;
+                          color: #ffffff;
+                        "
+                      >
+                        &reg; CDC,IIT Dharwad,2021<br />
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

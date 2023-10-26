@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 # Register your models here.
-from .models import FCMToken,User,Opening
+from .models import *
 
 
 
@@ -28,3 +28,10 @@ class openingAdmin(ImportExportModelAdmin,admin.ModelAdmin):
     search_fields = ['name','id']
     ordering = ('name',)
 admin.site.register(Opening, openingAdmin)
+
+class EventAdmin(ImportExportModelAdmin,admin.ModelAdmin):
+    list_display = [ 'name','id']
+    list_filter = ('name','id')
+    search_fields = ['name','id']
+    ordering = ('name',)
+admin.site.register(Event, EventAdmin)

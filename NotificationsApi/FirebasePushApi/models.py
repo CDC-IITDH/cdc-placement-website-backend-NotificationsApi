@@ -43,7 +43,17 @@ class Opening(models.Model):
     deadline=models.DateTimeField(blank=False, null=False)
     notifications = models.JSONField(default=list, blank=True, null=True)
     role=models.CharField(max_length=255, blank=False, null=False)
+   # opening_type=models.CharField(max_length=255, blank=False, null=False,default="Placement")
 
+class Event(models.Model):
+    id=models.CharField(blank=False, max_length=25, db_index=True,primary_key=True)
+    name=models.CharField(max_length=255, blank=False, null=False)
+    date=models.DateField(blank=False, null=False)
+    timing=models.CharField(max_length=255, blank=False, null=False)
+    notifications = models.JSONField(default=list, blank=True, null=True)
+    # venue=models.CharField(max_length=255, blank=False, null=False)
+    description=models.CharField(max_length=255, blank=False, null=False)
+    # event_type=models.CharField(max_length=255, blank=False, null=False,default="Workshop")
 
 #create A model to store firebase cloud messaging tokens
 class FCMToken(models.Model):
