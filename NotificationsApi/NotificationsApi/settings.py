@@ -182,6 +182,8 @@ CRONJOBS = [
     ('0 3 * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.send_remainder_mails','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 '),
 # 3 because of timezone difference ubuntu runs cron in UTC
     ('0 1 * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.send_daily_digest','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 '),
+
+    ('0 0 * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.populate_notification_panel','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 '),
 ]
 
 

@@ -27,6 +27,7 @@ class User(models.Model):
     email = models.CharField(max_length=255, blank=False, null=False,primary_key=True)
     user_type = ArrayField(models.CharField(blank=False, max_length=10, choices=ROLE_CHOICES), size=4, default=list, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    notification_panel = models.JSONField(default=list, blank=True, null=True)
     
 
     class Meta:
@@ -53,6 +54,7 @@ class Event(models.Model):
     notifications = models.JSONField(default=list, blank=True, null=True)
     # venue=models.CharField(max_length=255, blank=False, null=False)
     description=models.CharField(max_length=255, blank=False, null=False)
+    registered_users=models.ManyToManyField(User,blank=True)
     # event_type=models.CharField(max_length=255, blank=False, null=False,default="Workshop")
 
 #create A model to store firebase cloud messaging tokens

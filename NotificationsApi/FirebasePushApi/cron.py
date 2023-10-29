@@ -82,3 +82,65 @@ def send_daily_digest():
         db_logger.error(traceback.format_exc())
         print("Something went wrong while sending digest mails")
 
+
+def populate_notification_panel():
+    try:
+        print("Populating notification panel at "+str(datetime.now()))
+        for user in User.objects.all():
+            user.notification_panel=[]
+            user.save()
+        openings=Opening.objects.all()
+        for opening in openings:
+            deadline=opening.deadline
+            if(deadline>timezone.now() and deadline-timezone.now()<timezone.timedelta(days=1)):
+                print("Populating notification panel for "+str(opening.id))
+                try:
+                    header=jwt.encode({"typ":"JWT","alg":"HS256","kid":"1","send_all":"True"},os.environ.get("JWT_SECRET_KEY"),algorithm="HS256")
+                    headers={"Authorization":"Bearer "+header}
+                    url = os.environ.get("BACKEND_FETCH_API_URL")+"?opening_id="+str(opening.id)+"&send_all=True"
+                    payload = {}
+                    resp = rq.request("GET", url, headers=headers, data=payload)
+                    res=json.loads(resp.text)
+                    if(resp.status_code!=200):
+                            print("Something went wrong while populating remainder notifications")
+                            db_logger.error("Something went wrong while populating remainder notifications"+str(resp))
+                    else:
+                        if not res["eligible_students"][0]:
+                            print("No one is eligible for opening at " +opening.name)
+                            continue
+                        print("Eligible students for opening at "+opening.name)
+                        eligible_students=res["eligible_students"][1]
+                        for student in eligible_students:
+                            print(student)
+                            try:
+                                user=User.objects.get(email=student)
+                                user.notification_panel.append({"type":"opening","id":opening.id,"name":opening.name,"timing":str(opening.deadline)})
+                                user.save()
+                            except:
+                                db_logger.error(traceback.format_exc())
+                                print("Something went wrong while populating notification panel")
+                    
+                   
+                except:
+                    db_logger.error(traceback.format_exc())
+                    print("Something went wrong while populating notification panel")
+
+        for event in Event.objects.all():
+            date=event.date
+            if(date==timezone.localdate()):
+                print("Populating notification panel for "+str(event.id))
+                try:
+                   for user in event.registered_users.all():
+                        try:
+                            user.notification_panel.append({"type":"event","id":event.id,"name":event.name,"timing":event.timing})
+                            user.save()
+                        except:
+                            db_logger.error(traceback.format_exc())
+                            print("Something went wrong while populating notification panel")
+                   
+                except:
+                    db_logger.error(traceback.format_exc())
+                    print("Something went wrong while populating notification panel")
+    except:
+        db_logger.error(traceback.format_exc())
+        print("Something went wrong while populating notification panel")
