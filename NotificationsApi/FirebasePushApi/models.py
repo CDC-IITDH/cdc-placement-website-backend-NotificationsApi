@@ -99,9 +99,9 @@ class FCMToken(models.Model):
                 # Handle any errors that occur during subscription
                     if response.failure_count > 0:
                         print(response.errors)
-                        db_logger.warning(response.errors)
+                        db_logger.info("The above error occured while saving token of "+str(self.user)+" token is"+str(self.token))
+                        db_logger.info(response.errors)
                     # errors = [error for error in response.errors]
-                    # self.deactivate_devices_with_error_results([self.token], errors)
                 data = {
                     "title": "Welcome :)",
                     "body": "Thanks for subscribing to CDC Notifications",
@@ -122,7 +122,7 @@ class FCMToken(models.Model):
                     
         except:
             print("Something went wrong")
-            db_logger.error(traceback.format_exc())
+            db_logger.error("error while saving token of "+str(self.user)+" "+str(traceback.format_exc()))
 
     def send_message(self,message: messaging.Message,app: FIREBASE_APP,**more_send_message_kwargs) -> Union[Optional[messaging.SendResponse], FirebaseError]:
         message.token = self.token
@@ -167,9 +167,9 @@ class FCMToken(models.Model):
             print("Invalid Token of user: "+self.user.email+" deleted")
         else:
             # If the error is unknown, log it
-            db_logger.error(error)
+            db_logger.info(error)
             FCMToken.objects.filter(token=registration_token).delete()
-            print("Unknown Token of user: "+self.user.email+" deleted")
+            db_logger.info("Unknown Token of user: "+self.user.email+" deleted due to below error")
 
    
     
