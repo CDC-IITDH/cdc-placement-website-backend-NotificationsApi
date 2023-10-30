@@ -178,12 +178,12 @@ FIREBASE_APP = initialize_app(firebase_cred)
 
 CRONJOBS = [
     ('*/30 * * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.send_remainder_notifications','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 '),
-    #send remainder mails every day at 8:00 AM
-    ('0 3 * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.send_remainder_mails','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 '),
+    #send remainder mails every day at 7:30 AM
+    ('0 2 * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.send_remainder_mails','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 '),
 # 3 because of timezone difference ubuntu runs cron in UTC
-    ('0 1 * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.send_daily_digest','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 '),
+    #('0 1 * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.send_daily_digest','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 '),
 
-    ('0 0 * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.populate_notification_panel','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 '),
+   # ('0 0 * * * export GOOGLE_APPLICATION_CREDENTIALS='+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")+" && ", 'FirebasePushApi.cron.populate_notification_panel','>>'+STATICFILES_DIRS[0] +'cron.log 2>&1 '),
 ]
 
 

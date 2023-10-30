@@ -207,8 +207,9 @@ def send_notifications(opening):
         print("Something went wrong while sending remainder notifications")        
 
 @background_task.background(schedule=2)
-def send_mails_opening(opening):
+def send_mails_opening(id):
     try:
+        opening=Opening.objects.get(id=id)
         header=jwt.encode({"typ":"JWT","alg":"HS256","kid":"1"},os.environ.get("JWT_SECRET_KEY"),algorithm="HS256")
         headers={"Authorization":"Bearer "+header}
         url = os.environ.get("BACKEND_FETCH_API_URL")+"?opening_id="+str(opening.id)

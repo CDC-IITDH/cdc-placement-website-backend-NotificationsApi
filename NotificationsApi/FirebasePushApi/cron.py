@@ -32,7 +32,7 @@ def send_remainder_mails():
             if(deadline>timezone.now() and deadline-timezone.now()<timezone.timedelta(days=1)):
                 print("Sending mail for "+str(opening.id))
                 try:
-                    send_mails_opening(opening)
+                    send_mails_opening(opening.id)
                 except:
                     db_logger.error(traceback.format_exc())
                     print("Something went wrong while sending mails")
