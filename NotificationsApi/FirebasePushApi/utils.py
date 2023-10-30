@@ -207,12 +207,15 @@ def send_notifications(opening):
         print("Something went wrong while sending remainder notifications")        
 
 @background_task.background(schedule=2)
-def send_mails_opening(id):
+def send_mails_opening(id,changed=False):
     try:
         opening=Opening.objects.get(id=id)
         header=jwt.encode({"typ":"JWT","alg":"HS256","kid":"1"},os.environ.get("JWT_SECRET_KEY"),algorithm="HS256")
         headers={"Authorization":"Bearer "+header}
-        url = os.environ.get("BACKEND_FETCH_API_URL")+"?opening_id="+str(opening.id)
+        send_all=""
+        if changed:
+            send_all="&send_all=True"
+        url = os.environ.get("BACKEND_FETCH_API_URL")+"?opening_id="+str(opening.id)+send_all
         payload = {}
         resp = rq.request("GET", url, headers=headers, data=payload)
         res=json.loads(resp.text)
@@ -225,7 +228,15 @@ def send_mails_opening(id):
                 return
             opening_link="https://cdc.iitdh.ac.in/portal/student/dashboard/placements/"+str(opening.id)
             deadline=timezone.localtime(opening.deadline)
-            sendEmail(res["eligible_students"][1], "Reminder for "+opening.name+" - "+opening.role, {"company_name":opening.name,"designation":opening.role,
+            if changed:
+                # print("Sending mails to students for opening at " +opening.name+" with changed details")
+                sendEmail(res["eligible_students"][1], "Deadline Updated "+opening.name+" - "+opening.role, {"company_name":opening.name,"designation":opening.role,
+                                                                                                    "deadline":deadline.strftime("%d %B %Y, %I:%M %p"),
+                                                                                                    "link":opening_link,
+                                                                                                    "opening_type":"Placement",}, "notify_students_opening_deadlineUpdated.html")
+
+            else:
+                sendEmail(res["eligible_students"][1], "Reminder for "+opening.name+" - "+opening.role, {"company_name":opening.name,"designation":opening.role,
                                                                                                     "deadline":deadline.strftime("%d %B %Y, %I:%M %p"),
                                                                                                     "link":opening_link,
                                                                                                     "opening_type":"Placement",}, "notify_students_opening_remainder.html")
