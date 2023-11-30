@@ -99,8 +99,10 @@ def add_opening(request):
         id=decoded_token['id']
         deadline = datetime.strptime(deadline, '%Y-%m-%d %H:%M:%S %z')
         if(Opening.objects.filter(id=id).exists()):
+            old_deadline=Opening.objects.get(id=id).deadline
             if(Opening.objects.filter(id=id).update(name=name,deadline=deadline,role=role,notifications=[])):
-                send_mails_opening(id=id,changed=True)
+                if(old_deadline!=deadline):
+                    send_mails_opening(id=id,changed=True)
                 return Response({'action': "Add Opening", 'message': "Opening Updated"},
                         status=status.HTTP_200_OK)
             return Response({'action': "Add Opening", 'message': "Opening already exists"},
